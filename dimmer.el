@@ -541,7 +541,7 @@ excluded due to the predicates before should be un-dimmed now."
 (defun dimmer-config-change-handler ()
   "Process all buffers if window configuration has changed."
   (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
-  (dimmer-process-all t))
+  (dimmer-process-all))
 
 (defun dimmer-after-focus-change-handler ()
   "Handle cases where a frame may have gained or last focus.

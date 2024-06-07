@@ -223,6 +223,13 @@ change this setting before calling the function `dimmer-mode'."
   :type '(boolean)
   :group 'dimmer)
 
+(defcustom dimmer-default-face 'default
+  "Face used to determine reference values for interpolating colours.
+
+Only foreground and background colours as reference."
+  :type '(face)
+  :group 'dimmer)
+
 (defcustom dimmer-use-colorspace :cielab
   "Colorspace in which dimming calculations are performed.
 Choices are :cielab (default), :hsl, or :rgb.
@@ -536,8 +543,8 @@ delegate to the foreground color, which is already dimmed."
          ;; since 29.1, face attributes can be the symbol 'reset
          (fg (if (eq 'reset fg-orig) 'unspecified  fg-orig))
          (bg (if (eq 'reset bg-orig) 'unspecified  bg-orig))
-         (def-fg (face-foreground 'default))
-         (def-bg (face-background 'default))
+         (def-fg (face-foreground dimmer-default-face nil t))
+         (def-bg (face-background dimmer-default-face nil t))
          ;; when mode is :both, the perceptual effect is "doubled"
          (my-frac (if (eq dimmer-adjustment-mode :both)
                       (/ frac 2.0)

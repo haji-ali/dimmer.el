@@ -769,7 +769,7 @@ are typically transient popups rather than user-initiated window changes."
                     (cl-some (lambda (f) (and (fboundp f) (funcall f)))
                              dimmer-prevent-dimming-predicates))))
     (unless ignore
-      (dimmer-process-all t))))
+      (dimmer-process-all))))
 
 (defun dimmer-after-focus-change-handler ()
   "Handle cases where a frame may have gained or last focus.

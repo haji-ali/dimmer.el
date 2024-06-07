@@ -185,6 +185,13 @@ change this setting before calling the function `dimmer-mode'."
   :type '(boolean)
   :group 'dimmer)
 
+(defcustom dimmer-default-face 'default
+  "Face used to determine reference values for interpolating colours.
+
+Only foreground and background colours as reference."
+  :type '(face)
+  :group 'dimmer)
+
 (defcustom dimmer-use-colorspace :cielab
   "Colorspace in which dimming calculations are performed.
 Choices are :cielab (default), :hsl, or :rgb.
@@ -391,8 +398,8 @@ containing the new foreground (and if needed, new background)
 suitable for use with `face-remap-add-relative`."
   (let ((fg (face-foreground f))
         (bg (face-background f))
-        (def-fg (face-foreground 'default))
-        (def-bg (face-background 'default))
+        (def-fg (face-foreground dimmer-default-face nil t))
+        (def-bg (face-background dimmer-default-face nil t))
         ;; when mode is :both, the perceptual effect is "doubled"
         (my-frac (if (eq dimmer-adjustment-mode :both)
                      (/ frac 2.0)

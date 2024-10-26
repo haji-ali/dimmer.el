@@ -838,12 +838,12 @@ advising `enable-theme' for Emacs 27-28."
         (dimmer-manage-frame-focus-hooks t)
         (dimmer-manage-theme-hooks t)
         (add-hook 'post-command-hook #'dimmer-command-handler)
-        (add-hook 'window-configuration-change-hook
+        (add-hook 'window-selection-change-functions
                   #'dimmer-config-change-handler))
     (dimmer-manage-frame-focus-hooks nil)
     (dimmer-manage-theme-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
-    (remove-hook 'window-configuration-change-hook
+    (remove-hook 'window-selection-change-functions
                  #'dimmer-config-change-handler)
     (dimmer-restore-all)))
 

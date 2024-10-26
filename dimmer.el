@@ -599,11 +599,11 @@ when `dimmer-watch-frame-focus-events` is nil."
       (progn
         (dimmer-manage-frame-focus-hooks t)
         (add-hook 'post-command-hook #'dimmer-command-handler)
-        (add-hook 'window-configuration-change-hook
+        (add-hook 'window-selection-change-functions
                   #'dimmer-config-change-handler))
     (dimmer-manage-frame-focus-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
-    (remove-hook 'window-configuration-change-hook
+    (remove-hook 'window-selection-change-functions
                  #'dimmer-config-change-handler)
     (dimmer-restore-all)))
 

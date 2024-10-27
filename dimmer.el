@@ -545,9 +545,9 @@ excluded due to the predicates before should be un-dimmed now."
   (unless (eq (window-buffer) dimmer-last-buffer)
     (dimmer-process-all)))
 
-(defun dimmer-config-change-handler (&rest _)
-  "Process all buffers if window configuration has changed."
-  (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
+(defun dimmer-select-change-handler (&rest _)
+  "Process all buffers if window or buffer selection has changed."
+  (dimmer--dbg-buffers 1 "dimmer-select-change-handler")
   (dimmer-process-all))
 
 (defun dimmer-after-focus-change-handler ()
@@ -582,10 +582,10 @@ when `dimmer-watch-frame-focus-events` is nil."
       ;; else emacs-version < 27.0
       (if install
           (with-no-warnings
-            (add-hook 'focus-in-hook #'dimmer-config-change-handler)
+            (add-hook 'focus-in-hook #'dimmer-select-change-handler)
             (add-hook 'focus-out-hook #'dimmer-dim-all))
         (with-no-warnings
-          (remove-hook 'focus-in-hook #'dimmer-config-change-handler)
+          (remove-hook 'focus-in-hook #'dimmer-select-change-handler)
           (remove-hook 'focus-out-hook #'dimmer-dim-all))))))
 
 ;;;###autoload
@@ -600,11 +600,16 @@ when `dimmer-watch-frame-focus-events` is nil."
         (dimmer-manage-frame-focus-hooks t)
         (add-hook 'post-command-hook #'dimmer-command-handler)
         (add-hook 'window-selection-change-functions
-                  #'dimmer-config-change-handler))
+                  #'dimmer-select-change-handler)
+        (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
+                 do (advice-add fn :after
+                                #'dimmer-select-change-handler)))
     (dimmer-manage-frame-focus-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
     (remove-hook 'window-selection-change-functions
-                 #'dimmer-config-change-handler)
+                 #'dimmer-select-change-handler)
+    (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
+             do (advice-remove fn #'dimmer-select-change-handler))
     (dimmer-restore-all)))
 
 ;;;###autoload

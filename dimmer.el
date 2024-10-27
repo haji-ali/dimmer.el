@@ -757,7 +757,7 @@ excluded due to the predicates before should be un-dimmed now."
   (unless (eq (window-buffer) dimmer-last-buffer)
     (dimmer-process-all)))
 
-(defun dimmer-config-change-handler ()
+(defun dimmer-config-change-handler (&rest _)
   "Process all buffers if window configuration has changed.
 Skips forced reprocessing when any child frame exists or any
 `dimmer-prevent-dimming-predicate` is active, since those changes

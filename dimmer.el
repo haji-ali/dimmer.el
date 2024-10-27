@@ -757,12 +757,12 @@ excluded due to the predicates before should be un-dimmed now."
   (unless (eq (window-buffer) dimmer-last-buffer)
     (dimmer-process-all)))
 
-(defun dimmer-config-change-handler (&rest _)
-  "Process all buffers if window configuration has changed.
+(defun dimmer-select-change-handler (&rest _)
+  "Process all buffers if window or buffer selection has changed.
 Skips forced reprocessing when any child frame exists or any
 `dimmer-prevent-dimming-predicate` is active, since those changes
 are typically transient popups rather than user-initiated window changes."
-  (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
+  (dimmer--dbg-buffers 1 "dimmer-select-change-handler")
   (let ((ignore (or (cl-some (lambda (f)
                                (frame-parameter f 'parent-frame))
                              (frame-list))
@@ -839,12 +839,17 @@ advising `enable-theme' for Emacs 27-28."
         (dimmer-manage-theme-hooks t)
         (add-hook 'post-command-hook #'dimmer-command-handler)
         (add-hook 'window-selection-change-functions
-                  #'dimmer-config-change-handler))
+                  #'dimmer-select-change-handler)
+        (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
+                 do (advice-add fn :after
+                                #'dimmer-select-change-handler)))
     (dimmer-manage-frame-focus-hooks nil)
     (dimmer-manage-theme-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
     (remove-hook 'window-selection-change-functions
-                 #'dimmer-config-change-handler)
+                 #'dimmer-select-change-handler)
+    (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
+             do (advice-remove fn #'dimmer-select-change-handler))
     (dimmer-restore-all)))
 
 ;;;###autoload

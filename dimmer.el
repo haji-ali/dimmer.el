@@ -194,6 +194,15 @@ the buffer is not dimmed."
   :type '(repeat (choice function))
   :group 'dimmer)
 
+(defcustom dimmer-change-hook nil
+  "Hook to call after dimming or undimming buffer.
+
+The hook after dimming or undimming the current buffer. The
+argument is nil when dimming and the dimmed/undimmed buffer is
+current."
+  :type 'hook
+  :group 'dimmer)
+
 (define-obsolete-variable-alias
   'dimmer-exclusion-predicates 'dimmer-prevent-dimming-predicates "0.4.0")
 (defcustom dimmer-prevent-dimming-predicates '(window-minibuffer-p)
@@ -626,6 +635,7 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
         (let ((c (dimmer-face-color f frac)))
           (when c  ; e.g. "(when-let* ((c (...)))" in Emacs 26
             (push (face-remap-add-relative f c) dimmer-buffer-face-remaps)))))
+    (run-hook-with-args 'dimmer-change-hook nil)
     (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
                  (alist-get 'default dimmer-buffer-face-remaps))
     (dimmer--dbg 2 "dimmer-dim-buffer: AFTER '%s' (%s)" buf
@@ -651,6 +661,7 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
         (when tainted
           (setq dimmer-buffer-tainted t)))
       (setq dimmer-buffer-face-remaps nil))
+    (run-hook-with-args 'dimmer-change-hook t)
     (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
                  (alist-get 'default dimmer-buffer-face-remaps))
     (dimmer--dbg 2 "dimmer-restore-buffer: AFTER '%s' (%s)" buf

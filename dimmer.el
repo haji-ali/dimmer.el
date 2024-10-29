@@ -721,7 +721,11 @@ process all buffers regardless of the various dimming predicates.
 While performing this scan, any buffer that would have been
 excluded due to the predicates before should be un-dimmed now."
   (dimmer--dbg-buffers 1 "dimmer-process-all")
-  (let* ((selected (current-buffer))
+  (let* (;;(selected (current-buffer))
+         ;; In some rare instances, (current-buffer) does not reflect the
+         ;; currently selected buffer, but `(window-buffer (selected-window))'
+         ;; seems more reliable.
+         (selected (window-buffer (selected-window)))
          (ignore   (cl-some (lambda (f) (and (fboundp f) (funcall f)))
                             dimmer-prevent-dimming-predicates))
          (visbufs  (dimmer-visible-buffer-list))
@@ -837,14 +841,14 @@ advising `enable-theme' for Emacs 27-28."
       (progn
         (dimmer-manage-frame-focus-hooks t)
         (dimmer-manage-theme-hooks t)
-        (add-hook 'post-command-hook #'dimmer-command-handler)
+        ;;(add-hook 'post-command-hook #'dimmer-command-handler)
         (add-hook 'window-selection-change-functions
                   #'dimmer-select-change-handler)
         (add-hook 'window-buffer-change-functions
                   #'dimmer-select-change-handler))
     (dimmer-manage-frame-focus-hooks nil)
     (dimmer-manage-theme-hooks nil)
-    (remove-hook 'post-command-hook #'dimmer-command-handler)
+    ;;(remove-hook 'post-command-hook #'dimmer-command-handler)
     (remove-hook 'window-selection-change-functions
                  #'dimmer-select-change-handler)
     (remove-hook 'window-buffer-change-functions

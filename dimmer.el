@@ -612,15 +612,14 @@ when `dimmer-watch-frame-focus-events` is nil."
         (add-hook 'post-command-hook #'dimmer-command-handler)
         (add-hook 'window-selection-change-functions
                   #'dimmer-select-change-handler)
-        (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
-                 do (advice-add fn :after
-                                #'dimmer-select-change-handler)))
+        (add-hook 'window-buffer-change-functions
+                  #'dimmer-select-change-handler))
     (dimmer-manage-frame-focus-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
     (remove-hook 'window-selection-change-functions
                  #'dimmer-select-change-handler)
-    (cl-loop for fn in '(pop-to-buffer switch-to-buffer)
-             do (advice-remove fn #'dimmer-select-change-handler))
+    (remove-hook 'window-buffer-change-functions
+                 #'dimmer-select-change-handler)
     (dimmer-restore-all)))
 
 ;;;###autoload

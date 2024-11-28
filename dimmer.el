@@ -414,6 +414,10 @@ suitable for use with `face-remap-add-relative`."
                      (/ frac 2.0)
                    frac))
         (result '()))
+    (when (eq fg 'reset) (setq fg (face-foreground 'default)))
+    (when (eq bg 'reset) (setq bg (face-background 'default)))
+    (when (eq def-fg 'reset) (setq def-fg (face-foreground 'default)))
+    (when (eq def-bg 'reset) (setq def-bg (face-foreground 'default)))
     ;; We shift the desired components of F by FRAC amount toward the `default`
     ;; color, thereby dimming or desaturating the overall appearance:
     ;;   * When the `dimmer-adjustment-mode` is `:foreground` we move the

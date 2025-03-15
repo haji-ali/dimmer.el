@@ -317,6 +317,10 @@ integer for more verbosity.")
 
 (defvar-local dimmer-buffer-face-remaps nil
   "Per-buffer face remappings needed for later clean up.")
+
+(defvar-local dimmer-master-buffer nil
+  "If non-nil, this buffer determines if the local buffer is active or not.")
+
 ;; don't allow major mode change to kill the local variable
 (put 'dimmer-buffer-face-remaps 'permanent-local t)
 
@@ -541,10 +545,13 @@ excluded due to the predicates before should be un-dimmed now."
     (when (or force (not ignore))
       (dolist (buf (if force visbufs filtbufs))
         (dimmer--dbg 2 "dimmer-process-all: buf %s" buf)
-        (if (or (eq buf selected)
-                (and force (not (memq buf filtbufs))))
+        (let ((master-buf (or (with-current-buffer buf
+                                dimmer-master-buffer)
+                              buf)))
+          (if (or (eq master-buf selected)
+                  (and force (not (memq master-buf filtbufs))))
             (dimmer-restore-buffer buf)
-          (dimmer-dim-buffer buf dimmer-fraction))))))
+            (dimmer-dim-buffer buf dimmer-fraction)))))))
 
 (defun dimmer-dim-all ()
   "Dim all buffers."

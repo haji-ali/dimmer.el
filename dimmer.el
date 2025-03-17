@@ -378,6 +378,8 @@ integer for more verbosity.")
 
 (defvar-local dimmer-master-buffer nil
   "If non-nil, this buffer determines if the local buffer is active or not.")
+(defvar-local dimmer-disable-p nil
+  "If non-nil, disable dimming locally.")
 
 ;; don't allow major mode change to kill the local variable
 (put 'dimmer-buffer-face-remaps 'permanent-local t)
@@ -697,6 +699,7 @@ If BUFFER-LIST is provided by the caller, then filter that list."
             ;;    (a) the buffer is tainted and reprocessing is disabled
             ;; OR (b) one of the dimmer-buffer-exclusion-regexps matches
             ;; OR (c) one of the dimmer-buffer-exclusion-predicates is true
+            ;; OR (d) has a local non-nil variable `dimmer-disable-p'
             (let ((name (buffer-name buf)))
               (not (or (with-current-buffer buf
                          (and dimmer-buffer-tainted
@@ -704,7 +707,8 @@ If BUFFER-LIST is provided by the caller, then filter that list."
                        (cl-some (lambda (rxp) (string-match-p rxp name))
                                 dimmer-buffer-exclusion-regexps)
                        (cl-some (lambda (f) (funcall f buf))
-                                dimmer-buffer-exclusion-predicates)))))
+                                dimmer-buffer-exclusion-predicates)
+                       (buffer-local-value 'dimmer-disable-p buf)))))
           (or buffer-list (dimmer-visible-buffer-list)))))
     (dimmer--dbg 3 "dimmer-filtered-buffer-list: %s" buffers)
     buffers))

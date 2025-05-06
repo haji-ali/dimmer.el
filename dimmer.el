@@ -700,15 +700,15 @@ If BUFFER-LIST is provided by the caller, then filter that list."
             ;; OR (b) one of the dimmer-buffer-exclusion-regexps matches
             ;; OR (c) one of the dimmer-buffer-exclusion-predicates is true
             ;; OR (d) has a local non-nil variable `dimmer-disable-p'
-            (or (let ((name (buffer-name buf)))
+            (let ((name (buffer-name buf)))
               (not (or (with-current-buffer buf
                          (and dimmer-buffer-tainted
                               (not dimmer-reprocess-tainted-buffers)))
                        (cl-some (lambda (rxp) (string-match-p rxp name))
                                 dimmer-buffer-exclusion-regexps)
                        (cl-some (lambda (f) (funcall f buf))
-                                    dimmer-buffer-exclusion-predicates))))
-                (buffer-local-value 'dimmer-disable-p buf)))
+                                dimmer-buffer-exclusion-predicates)
+                       (buffer-local-value 'dimmer-disable-p buf)))))
           (or buffer-list (dimmer-visible-buffer-list)))))
     (dimmer--dbg 3 "dimmer-filtered-buffer-list: %s" buffers)
     buffers))

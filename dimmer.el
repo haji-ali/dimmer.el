@@ -531,11 +531,11 @@ than using TARGET-COLOR directly."
   "Return the resolved hue value (0.0–1.0) from `dimmer-hue-target'."
   (pcase dimmer-hue-target
     (:background
-     (if-let ((bg (face-background 'default)))
+     (if-let* ((bg (face-background 'default)))
          (nth 0 (apply #'color-rgb-to-hsl (color-name-to-rgb bg)))
        0.0))
     (:foreground
-     (if-let ((fg (face-foreground 'default)))
+     (if-let* ((fg (face-foreground 'default)))
          (nth 0 (apply #'color-rgb-to-hsl (color-name-to-rgb fg)))
        0.0))
     ((pred floatp) (mod dimmer-hue-target 1.0))))
@@ -607,7 +607,7 @@ delegate to the foreground color, which is already dimmed."
                      '(:foreground :both :desaturate :hueshift))
                def-bg (color-defined-p def-bg))
       (dolist (attr dimmer-color-bearing-attributes)
-        (when-let ((dimmed (dimmer--dim-face-attribute f attr def-bg my-frac)))
+        (when-let* ((dimmed (dimmer--dim-face-attribute f attr def-bg my-frac)))
           (setq result (plist-put result attr dimmed)))))
     result))
 
@@ -638,9 +638,8 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
                  (alist-get 'default dimmer-buffer-face-remaps))
     (unless dimmer-buffer-face-remaps
       (dolist (f (dimmer-filtered-face-list))
-        (let ((c (dimmer-face-color f frac)))
-          (when c  ; e.g. "(when-let* ((c (...)))" in Emacs 26
-            (push (face-remap-add-relative f c) dimmer-buffer-face-remaps)))))
+        (when-let* ((c (dimmer-face-color f frac)))
+          (push (face-remap-add-relative f c) dimmer-buffer-face-remaps))))
     (run-hook-with-args 'dimmer-change-hook nil)
     (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
                  (alist-get 'default dimmer-buffer-face-remaps))

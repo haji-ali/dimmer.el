@@ -751,10 +751,15 @@ excluded due to the predicates before should be un-dimmed now."
   (mapc 'dimmer-restore-buffer (buffer-list)))
 
 (defun dimmer-command-handler ()
-  "Process all buffers if current buffer has changed."
+  "Process all buffers if the selected window's buffer has changed.
+`post-command-hook' runs with whatever buffer the command left current,
+which need not be the selected window's, so make that one current for
+`dimmer-process-all'."
   (dimmer--dbg-buffers 1 "dimmer-command-handler")
-  (unless (eq (window-buffer) dimmer-last-buffer)
-    (dimmer-process-all)))
+  (let ((buf (window-buffer)))
+    (unless (eq buf dimmer-last-buffer)
+      (with-current-buffer buf
+        (dimmer-process-all)))))
 
 (defun dimmer-config-change-handler ()
   "Process all buffers if window configuration has changed.
